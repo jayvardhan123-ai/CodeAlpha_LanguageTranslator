@@ -219,142 +219,139 @@ def render_translator_workspace(lang_dict):
     st.markdown('<p class="gradient-subtext">CodeAlpha Artificial Intelligence Internship Project</p>', unsafe_allow_html=True)
     
     # Main interactive Glassmorphic Card
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    
-    # Languages selector layout
-    col1, col_swap, col2 = st.columns([9, 2, 9])
-    
-    with col1:
-        src_langs = list(lang_dict.keys())
-        st.selectbox(
-            "Source Language 📥", 
-            options=src_langs,
-            key="src_lang"
-        )
+    with st.container(border=True):
+        # Languages selector layout
+        col1, col_swap, col2 = st.columns([9, 2, 9])
         
-    with col_swap:
-        st.markdown('<div class="swap-btn-container">', unsafe_allow_html=True)
-        if st.button("🔄", help="Swap languages and text"):
-            execute_swap()
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-    with col2:
-        dest_langs = [l for l in lang_dict.keys() if l != "Auto-Detect"]
-        spanish_idx = dest_langs.index("Spanish") if "Spanish" in dest_langs else 0
-        st.selectbox(
-            "Target Language 📤",
-            options=dest_langs,
-            index=spanish_idx,
-            key="dest_lang"
-        )
-
-    st.markdown('<hr style="border: 0; height: 1px; background: rgba(255,255,255,0.08); margin: 1.5rem 0;" />', unsafe_allow_html=True)
-    
-    # Text input and outputs layout
-    col_input, col_output = st.columns(2)
-    
-    with col_input:
-        # Micro Speech-to-Text widget
-        st.markdown("##### Input Text")
-        stt_placeholder = st.empty()
-        
-        # Audio recording button from streamlit-mic-recorder
-        with stt_placeholder.container():
-            recorded_text = speech_to_text(
-                start_prompt="🎙️ Click to Speak",
-                stop_prompt="⏹️ Stop Recording",
-                language=lang_dict.get(st.session_state.src_lang, "en"),
-                key="stt_voice_input",
-                just_once=True
+        with col1:
+            src_langs = list(lang_dict.keys())
+            st.selectbox(
+                "Source Language 📥", 
+                options=src_langs,
+                key="src_lang"
             )
-            if recorded_text:
-                st.session_state.source_text = recorded_text
-                st.toast("🎙️ Voice transcription captured!")
-        
-        # Main text input box
-        st.text_area(
-            "Type text here...",
-            placeholder="Type or click the microphone to speak...",
-            height=200,
-            label_visibility="collapsed",
-            key="source_text"
-        )
-        
-        # Character count indicator
-        char_count = len(st.session_state.source_text)
-        count_color = "#718096" if char_count <= 4000 else ("#dd6b20" if char_count <= 4800 else "#e53e3e")
-        st.markdown(
-            f'<div class="char-counter" style="color: {count_color};">{char_count} / 5000 chars</div>', 
-            unsafe_allow_html=True
-        )
-        
-    with col_output:
-        st.markdown("##### Translated Text")
-        
-        # Renders the output inside a custom styling area
-        translated_box_html = f"""
-        <div style="background-color: rgba(15, 10, 30, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1rem; min-height: 200px; color: white; font-size: 1.05rem; overflow-y: auto;">
-            {st.session_state.translated_text if st.session_state.translated_text else '<span style="color: #4a5568; font-style: italic;">Translation will appear here instantly...</span>'}
-        </div>
-        """
-        st.markdown(translated_box_html, unsafe_allow_html=True)
-        
-        # Spacer to align outputs
-        st.markdown('<div style="height: 10px;"></div>', unsafe_allow_html=True)
-
-    # Core Action trigger row
-    action_col1, action_col2 = st.columns([1, 1])
-    
-    with action_col1:
-        if st.button("✨ Translate Text", key="main_translate_btn"):
-            if not st.session_state.source_text.strip():
-                st.warning("⚠️ Please enter some text to translate first!")
-            elif len(st.session_state.source_text) > 5000:
-                st.error("❌ Character limit exceeded! Please reduce text length below 5000.")
-            else:
-                # Custom pulsing gradient bar loader
-                loader_placeholder = st.empty()
-                loader_placeholder.markdown('<div class="pulsing-bar"></div>', unsafe_allow_html=True)
-                
-                # Perform API translation
-                result = handle_translation(
-                    st.session_state.source_text,
-                    st.session_state.src_lang,
-                    st.session_state.dest_lang,
-                    lang_dict
-                )
-                
-                # Simulated slight delay for visual impact of the transition
-                time.sleep(0.4)
-                
-                st.session_state.translated_text = result
-                loader_placeholder.empty()
+            
+        with col_swap:
+            st.markdown('<div class="swap-btn-container">', unsafe_allow_html=True)
+            if st.button("🔄", help="Swap languages and text"):
+                execute_swap()
                 st.rerun()
-
-    # If translation is active, show the utility ribbon
-    if st.session_state.translated_text and not st.session_state.translated_text.startswith("An error occurred"):
-        st.markdown('<hr style="border: 0; height: 1px; background: rgba(255,255,255,0.05); margin: 1rem 0;" />', unsafe_allow_html=True)
-        
-        util_col1, util_col2 = st.columns([2, 1])
-        
-        with util_col1:
-            # Native safe Copy Code widget
-            st.markdown("💡 **Copy Translation:**")
-            st.code(st.session_state.translated_text, language=None)
+            st.markdown('</div>', unsafe_allow_html=True)
             
-        with util_col2:
-            st.markdown("📥 **Export Document:**")
-            # Build download interface
-            st.download_button(
-                label="📥 Save as Text File",
-                data=st.session_state.translated_text,
-                file_name=f"translation_{lang_dict.get(st.session_state.src_lang, 'auto')}_{lang_dict.get(st.session_state.dest_lang, 'es')}.txt",
-                mime="text/plain",
-                use_container_width=True
+        with col2:
+            dest_langs = [l for l in lang_dict.keys() if l != "Auto-Detect"]
+            spanish_idx = dest_langs.index("Spanish") if "Spanish" in dest_langs else 0
+            st.selectbox(
+                "Target Language 📤",
+                options=dest_langs,
+                index=spanish_idx,
+                key="dest_lang"
+            )
+
+        st.markdown('<hr style="border: 0; height: 1px; background: rgba(255,255,255,0.08); margin: 1.5rem 0;" />', unsafe_allow_html=True)
+        
+        # Text input and outputs layout
+        col_input, col_output = st.columns(2)
+        
+        with col_input:
+            # Micro Speech-to-Text widget
+            st.markdown("##### Input Text")
+            stt_placeholder = st.empty()
+            
+            # Audio recording button from streamlit-mic-recorder
+            with stt_placeholder.container():
+                recorded_text = speech_to_text(
+                    start_prompt="🎙️ Click to Speak",
+                    stop_prompt="⏹️ Stop Recording",
+                    language=lang_dict.get(st.session_state.src_lang, "en"),
+                    key="stt_voice_input",
+                    just_once=True
+                )
+                if recorded_text:
+                    st.session_state.source_text = recorded_text
+                    st.toast("🎙️ Voice transcription captured!")
+            
+            # Main text input box
+            st.text_area(
+                "Type text here...",
+                placeholder="Type or click the microphone to speak...",
+                height=200,
+                label_visibility="collapsed",
+                key="source_text"
             )
             
-    st.markdown('</div>', unsafe_allow_html=True)
+            # Character count indicator
+            char_count = len(st.session_state.source_text)
+            count_color = "#718096" if char_count <= 4000 else ("#dd6b20" if char_count <= 4800 else "#e53e3e")
+            st.markdown(
+                f'<div class="char-counter" style="color: {count_color};">{char_count} / 5000 chars</div>', 
+                unsafe_allow_html=True
+            )
+            
+        with col_output:
+            st.markdown("##### Translated Text")
+            
+            # Renders the output inside a custom styling area
+            translated_box_html = f"""
+            <div style="background-color: rgba(15, 10, 30, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1rem; min-height: 200px; color: white; font-size: 1.05rem; overflow-y: auto;">
+                {st.session_state.translated_text if st.session_state.translated_text else '<span style="color: #4a5568; font-style: italic;">Translation will appear here instantly...</span>'}
+            </div>
+            """
+            st.markdown(translated_box_html, unsafe_allow_html=True)
+            
+            # Spacer to align outputs
+            st.markdown('<div style="height: 10px;"></div>', unsafe_allow_html=True)
+
+        # Core Action trigger row
+        action_col1, action_col2 = st.columns([1, 1])
+        
+        with action_col1:
+            if st.button("✨ Translate Text", key="main_translate_btn"):
+                if not st.session_state.source_text.strip():
+                    st.warning("⚠️ Please enter some text to translate first!")
+                elif len(st.session_state.source_text) > 5000:
+                    st.error("❌ Character limit exceeded! Please reduce text length below 5000.")
+                else:
+                    # Custom pulsing gradient bar loader
+                    loader_placeholder = st.empty()
+                    loader_placeholder.markdown('<div class="pulsing-bar"></div>', unsafe_allow_html=True)
+                    
+                    # Perform API translation
+                    result = handle_translation(
+                        st.session_state.source_text,
+                        st.session_state.src_lang,
+                        st.session_state.dest_lang,
+                        lang_dict
+                    )
+                    
+                    # Simulated slight delay for visual impact of the transition
+                    time.sleep(0.4)
+                    
+                    st.session_state.translated_text = result
+                    loader_placeholder.empty()
+                    st.rerun()
+
+        # If translation is active, show the utility ribbon
+        if st.session_state.translated_text and not st.session_state.translated_text.startswith("An error occurred"):
+            st.markdown('<hr style="border: 0; height: 1px; background: rgba(255,255,255,0.05); margin: 1rem 0;" />', unsafe_allow_html=True)
+            
+            util_col1, util_col2 = st.columns([2, 1])
+            
+            with util_col1:
+                # Native safe Copy Code widget
+                st.markdown("💡 **Copy Translation:**")
+                st.code(st.session_state.translated_text, language=None)
+                
+            with util_col2:
+                st.markdown("📥 **Export Document:**")
+                # Build download interface
+                st.download_button(
+                    label="📥 Save as Text File",
+                    data=st.session_state.translated_text,
+                    file_name=f"translation_{lang_dict.get(st.session_state.src_lang, 'auto')}_{lang_dict.get(st.session_state.dest_lang, 'es')}.txt",
+                    mime="text/plain",
+                    use_container_width=True
+                )
 
 def render_history_panel(lang_dict):
     """Renders the comprehensive, searchable translation log."""
@@ -373,71 +370,68 @@ def render_history_panel(lang_dict):
         )
         return
         
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    
-    # History Control header
-    header_col1, header_col2 = st.columns([3, 1])
-    
-    with header_col1:
-        search_query = st.text_input("🔍 Search History", placeholder="Type keywords from source or translation...", label_visibility="collapsed")
+    with st.container(border=True):
+        # History Control header
+        header_col1, header_col2 = st.columns([3, 1])
         
-    with header_col2:
-        if st.button("🗑️ Clear All Logs", use_container_width=True):
-            st.session_state.history = []
-            st.toast("🧹 Translation logs cleared successfully!")
-            time.sleep(0.5)
-            st.rerun()
+        with header_col1:
+            search_query = st.text_input("🔍 Search History", placeholder="Type keywords from source or translation...", label_visibility="collapsed")
             
-    st.markdown('<hr style="border: 0; height: 1px; background: rgba(255,255,255,0.08); margin: 1rem 0;" />', unsafe_allow_html=True)
-    
-    # Filter list based on search query
-    filtered_history = st.session_state.history
-    if search_query.strip():
-        q = search_query.lower()
-        filtered_history = [
-            x for x in st.session_state.history 
-            if q in x["src_text"].lower() or q in x["dest_text"].lower() or q in x["src_lang"].lower() or q in x["dest_lang"].lower()
-        ]
-        
-    if not filtered_history:
-        st.info("No matching records found for your search term.")
-    else:
-        for idx, entry in enumerate(filtered_history):
-            h_col1, h_col2 = st.columns([16, 4])
-            
-            with h_col1:
-                # Custom formatted card
-                card_html = f"""
-                <div class="history-item" style="margin-bottom: 0.25rem;">
-                    <div class="history-meta">
-                        <span>🕒 {entry['timestamp']}</span>
-                        <span>
-                            <span class="history-lang">{entry['src_lang']}</span> ➡️ 
-                            <span class="history-lang">{entry['dest_lang']}</span>
-                        </span>
-                    </div>
-                    <div style="font-weight: 600; color: #cbd5e0; margin-top: 0.25rem;">"{entry['src_text']}"</div>
-                    <div style="color: #a255ff; margin-top: 0.15rem; font-style: italic;">→ "{entry['dest_text']}"</div>
-                </div>
-                """
-                st.markdown(card_html, unsafe_allow_html=True)
+        with header_col2:
+            if st.button("🗑️ Clear All Logs", use_container_width=True):
+                st.session_state.history = []
+                st.toast("🧹 Translation logs cleared successfully!")
+                time.sleep(0.5)
+                st.rerun()
                 
-            with h_col2:
-                st.markdown('<div style="height: 12px;"></div>', unsafe_allow_html=True)
-                # Unique key for each restore button
-                if st.button("🔄 Restore", key=f"restore_{idx}_{entry['timestamp']}", use_container_width=True):
-                    st.session_state.source_text = entry["src_text"]
-                    st.session_state.translated_text = entry["dest_text"]
-                    st.session_state.src_lang = entry["src_lang"]
-                    st.session_state.dest_lang = entry["dest_lang"]
-                    st.toast("⚡ Translation loaded back into Workspace!")
-                    time.sleep(0.5)
-                    st.session_state.selected_page = "🌐 Translator Workspace"
-                    st.rerun()
+        st.markdown('<hr style="border: 0; height: 1px; background: rgba(255,255,255,0.08); margin: 1rem 0;" />', unsafe_allow_html=True)
+        
+        # Filter list based on search query
+        filtered_history = st.session_state.history
+        if search_query.strip():
+            q = search_query.lower()
+            filtered_history = [
+                x for x in st.session_state.history 
+                if q in x["src_text"].lower() or q in x["dest_text"].lower() or q in x["src_lang"].lower() or q in x["dest_lang"].lower()
+            ]
+            
+        if not filtered_history:
+            st.info("No matching records found for your search term.")
+        else:
+            for idx, entry in enumerate(filtered_history):
+                h_col1, h_col2 = st.columns([16, 4])
+                
+                with h_col1:
+                    # Custom formatted card
+                    card_html = f"""
+                    <div class="history-item" style="margin-bottom: 0.25rem;">
+                        <div class="history-meta">
+                            <span>🕒 {entry['timestamp']}</span>
+                            <span>
+                                <span class="history-lang">{entry['src_lang']}</span> ➡️ 
+                                <span class="history-lang">{entry['dest_lang']}</span>
+                            </span>
+                        </div>
+                        <div style="font-weight: 600; color: #cbd5e0; margin-top: 0.25rem;">"{entry['src_text']}"</div>
+                        <div style="color: #a255ff; margin-top: 0.15rem; font-style: italic;">→ "{entry['dest_text']}"</div>
+                    </div>
+                    """
+                    st.markdown(card_html, unsafe_allow_html=True)
                     
-            st.markdown('<hr style="border: 0; height: 1px; background: rgba(255,255,255,0.03); margin: 0.5rem 0;" />', unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
+                with h_col2:
+                    st.markdown('<div style="height: 12px;"></div>', unsafe_allow_html=True)
+                    # Unique key for each restore button
+                    if st.button("🔄 Restore", key=f"restore_{idx}_{entry['timestamp']}", use_container_width=True):
+                        st.session_state.source_text = entry["src_text"]
+                        st.session_state.translated_text = entry["dest_text"]
+                        st.session_state.src_lang = entry["src_lang"]
+                        st.session_state.dest_lang = entry["dest_lang"]
+                        st.toast("⚡ Translation loaded back into Workspace!")
+                        time.sleep(0.5)
+                        st.session_state.selected_page = "🌐 Translator Workspace"
+                        st.rerun()
+                        
+                st.markdown('<hr style="border: 0; height: 1px; background: rgba(255,255,255,0.03); margin: 0.5rem 0;" />', unsafe_allow_html=True)
 
 
 

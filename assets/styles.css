@@ -8,8 +8,8 @@ html, body, [class*="css"] {
     font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* Glassmorphic Container Card */
-.glass-card {
+/* Glassmorphic Container Card (Styles native containers and custom classes) */
+div[data-testid="stVerticalBlockBorderWrapper"], .glass-card {
     background: rgba(255, 255, 255, 0.03) !important;
     backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
@@ -21,7 +21,7 @@ html, body, [class*="css"] {
     transition: transform 0.3s ease, box-shadow 0.3s ease !important;
 }
 
-.glass-card:hover {
+div[data-testid="stVerticalBlockBorderWrapper"]:hover, .glass-card:hover {
     box-shadow: 0 12px 40px 0 rgba(155, 93, 229, 0.15) !important;
     border-color: rgba(255, 255, 255, 0.12) !important;
 }
