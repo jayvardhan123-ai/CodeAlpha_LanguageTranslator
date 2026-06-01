@@ -439,72 +439,7 @@ def render_history_panel(lang_dict):
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-def render_developer_portfolio():
-    """Renders a gorgeous developer bio showcasing internship credentials."""
-    st.markdown('<h1 class="gradient-text">👨‍💻 Developer Portfolio</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="gradient-subtext">Artificial Intelligence Engineering Showcase</p>', unsafe_allow_html=True)
-    
-    col_bio, col_details = st.columns([2, 3])
-    
-    with col_bio:
-        dev_card_html = """
-        <div class="glass-card dev-card">
-            <span class="dev-badge">AI Intern Showcase</span>
-            <div class="dev-avatar" style="background: linear-gradient(135deg, #8b44ff 0%, #e02485 100%); color: white; font-size: 32px; font-weight: 800; display: flex; align-items: center; justify-content: center; font-family: 'Outfit';">
-                CA
-            </div>
-            <h3 style="color: white; margin-bottom: 0.1rem; font-family: 'Outfit';">CodeAlpha Intern</h3>
-            <p style="color: #a255ff; font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem;">Artificial Intelligence Division</p>
-            <p style="color: #718096; font-size: 0.85rem; margin-bottom: 1.5rem;">Specializing in NLP, Voice Technologies, and Beautiful Custom Full-Stack Web Interfaces</p>
-            <hr style="border: 0; height: 1px; background: rgba(255,255,255,0.1); margin: 1rem 0;" />
-            <div style="font-size: 0.8rem; color: #a0aec0; margin-bottom: 0.5rem;">CONNECT WITH ME:</div>
-            <div style="display: flex; justify-content: center; gap: 10px;">
-                <a href="https://github.com" target="_blank" style="text-decoration: none; background: rgba(255,255,255,0.05); color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.1);">GitHub</a>
-                <a href="https://linkedin.com" target="_blank" style="text-decoration: none; background: rgba(139, 68, 255, 0.2); color: #c084fc; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; border: 1px solid rgba(139, 68, 255, 0.3);">LinkedIn</a>
-            </div>
-        </div>
-        """
-        st.markdown(dev_card_html, unsafe_allow_html=True)
-        
-    with col_details:
-        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.markdown("### 🚀 Project Overview & Architecture")
-        st.write(
-            """
-            This **AI Language Translator** was engineered specifically for the **CodeAlpha Artificial Intelligence Internship**.
-            It represents an enterprise-grade translation tool built on modular principles, focusing on rich UI aesthetics, 
-            high API reliability, and immediate client-side responsiveness.
-            """
-        )
-        
-        st.markdown("#### 🛠️ Tech Stack & Key Integrations")
-        
-        cols_tech = st.columns(2)
-        with cols_tech[0]:
-            st.markdown(
-                """
-                - **Streamlit Framework**: Delivers lightning-fast full-stack capability with custom layout controls.
-                - **deep-translator API**: Implements multi-engine translation using robust server-side requests with fallback handling.
-                - **gTTS (Google Voice)**: Renders human-like speech output directly inside custom binary memory streams.
-                """
-            )
-        with cols_tech[1]:
-            st.markdown(
-                """
-                - **Streamlit Mic Recorder**: Utilizes client-side HTML5 WebAudio bindings to record voice transparently in-browser.
-                - **Custom CSS Engine**: Injecting glassmorphism cards, linear glow-bar load bars, and smooth transitions.
-                """
-            )
-            
-        st.markdown("#### 🌟 Key Achievements during Development")
-        st.markdown(
-            """
-            1. **In-Memory Audio Caching**: Engineered a robust `st.session_state` audio storage mapping. Repeated playback utilizes zero network bandwidth.
-            2. **Advanced Language Swap**: Managed state transitions dynamically so multi-lingual users experience flawless translation shifts.
-            3. **Portfolio Polish**: Built with mobile-responsive flex grids, customized dark styles, and descriptive markdown tags.
-            """
-        )
-        st.markdown('</div>', unsafe_allow_html=True)
+
 
 # ==============================================================================
 # 6. APP MAIN BOOTSTRAPPER
@@ -545,7 +480,7 @@ def main():
         st.markdown("#### 🧭 Navigation Menu")
         selected = st.radio(
             "Select Page",
-            options=["🌐 Translator Workspace", "📜 Session History", "👨‍💻 Developer Portfolio"],
+            options=["🌐 Translator Workspace", "📜 Session History"],
             label_visibility="collapsed",
             key="radio_nav"
         )
@@ -585,8 +520,6 @@ def main():
         render_translator_workspace(lang_dict)
     elif st.session_state.selected_page == "📜 Session History":
         render_history_panel(lang_dict)
-    elif st.session_state.selected_page == "👨‍💻 Developer Portfolio":
-        render_developer_portfolio()
 
 if __name__ == "__main__":
     main()
